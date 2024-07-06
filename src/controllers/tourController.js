@@ -2,10 +2,11 @@ import Tour from '../models/Tour.js';
 
 // Create a new tour
 export const createTour = async (req, res) => {
-    let { name, description, location, price, schedule, availableSlots } = req.body;
+    let { name, description, location, price, offer, category, schedule, availableSlots } = req.body;
     let imageUrl = '';
 
-    schedule = JSON.parse(schedule);
+    // console.log(schedule);
+    // schedule = JSON.parse(schedule);
 
     if (req.file) {
         imageUrl = `/uploads/images/${req.file.filename}`;
@@ -17,6 +18,8 @@ export const createTour = async (req, res) => {
             description,
             location,
             price,
+            offer,
+            category,
             schedule,
             availableSlots,
             image: imageUrl
@@ -31,7 +34,7 @@ export const createTour = async (req, res) => {
 
 // Update a tour
 export const updateTour = async (req, res) => {
-    const { name, description, location, price, schedule, availableSlots } = req.body;
+    const { name, description, location, price, offer, category, schedule, availableSlots } = req.body;
     let imageUrl = '';
 
     if (req.file) {
@@ -49,6 +52,8 @@ export const updateTour = async (req, res) => {
         tour.description = description || tour.description;
         tour.location = location || tour.location;
         tour.price = price || tour.price;
+        tour.offer = offer || tour.offer;
+        tour.category = category || tour.category;
         tour.schedule = schedule || tour.schedule;
         tour.availableSlots = availableSlots || tour.availableSlots;
         tour.image = imageUrl || tour.image;
@@ -98,5 +103,42 @@ export const getTourDetails = async (req, res) => {
 
 // Search tours
 export const searchTours = async (req, res) => {
-    // Implementation for searching tours
+    try {
+        const { location, minPrice, maxPrice, startDate, endDate } = req.query;
+
+        // Create a query object
+        let query = {};
+
+        // Add location filter if provided
+        if (location) {
+            query.location = { $regex: location, $options: 'i' }; // Case-insensitive match
+        }
+
+        // Add price filter if provided
+        if (minPrice || maxPrice) {
+            query.price = {};
+            if (minPrice) query.price.$gte = Number(minPrice);
+            if (maxPrice) query.price.$lte = Number(maxPrice);
+        }
+
+        // Add schedule filter if provided
+        if (startDate || endDate) {
+            if (startDate) {
+                if (!query['schedule.start']) query['schedule.start'] = {};
+                query['schedule.start'].$gte = new Date(startDate);
+            }
+            if (endDate) {
+                if (!query['schedule.end']) query['schedule.end'] = {};
+                query['schedule.end'].$lte = new Date(endDate);
+            }
+        }
+
+        // Find tours based on query
+        const tours = await Tour.find(query).populate('reviews');
+
+        // Send response
+        res.status(200).json(tours);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };

@@ -5,6 +5,8 @@ const TourSchema = new mongoose.Schema({
     description: { type: String, required: true },
     location: { type: String, required: true },
     price: { type: Number, required: true },
+    offer: { type: Number, default: 0},
+    category: { type: String, required: true },
     schedule: {
         start: { type: Date, required: true },
         end: { type: Date, required: true }

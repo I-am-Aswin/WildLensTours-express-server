@@ -1,8 +1,8 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import connectDB from "./config/db.js";
 
+import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import tourRoutes from "./routes/tourRoutes.js";
@@ -15,11 +15,14 @@ const PORT = process.env.PORT || 3000;
 
 connectDB();
 
+
 app.use( cors({
     origin: "*"
 }) );
 app.use( express.json() );
 app.use( express.urlencoded( {extended: true}) );
+
+app.use( '/uploads', express.static('./public/uploads'));
 
 
 app.use( (req, _, next) => {
