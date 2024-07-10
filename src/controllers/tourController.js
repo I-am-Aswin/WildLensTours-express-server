@@ -6,7 +6,8 @@ export const createTour = async (req, res) => {
     let imageUrl = '';
 
     // console.log(schedule);
-    // schedule = JSON.parse(schedule);
+    schedule = JSON.parse(schedule);
+    
 
     if (req.file) {
         imageUrl = `/uploads/images/${req.file.filename}`;
@@ -111,7 +112,11 @@ export const searchTours = async (req, res) => {
 
         // Add location filter if provided
         if (location) {
-            query.location = { $regex: location, $options: 'i' }; // Case-insensitive match
+            query.$or = [
+                { location: { $regex: location, $options: 'i' } }, // Case-insensitive match
+                { name: { $regex: location, $options: 'i' } },
+                { description: { $regex: location, $options: 'i' } }
+            ];
         }
 
         // Add price filter if provided

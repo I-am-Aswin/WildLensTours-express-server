@@ -3,7 +3,7 @@ import path from 'path';
 
 // Set storage engine
 const storage = multer.diskStorage({
-    destination: '.public/uploads/images',
+    destination: 'public/uploads/images',
     filename: (req, file, cb) => {
         cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
     }
@@ -29,6 +29,6 @@ const upload = multer({
     fileFilter: (req, file, cb) => {
         checkFileType(file, cb);
     }
-}).single('image');
+}).single('file');
 
 export default upload;
