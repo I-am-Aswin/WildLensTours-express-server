@@ -5,6 +5,7 @@
  "description": "WildLens Tours, a Tour Planner Companion",
  "main": "src/main.js",
  "scripts": {
+  "start": "node src/main.js",
   "dev": "nodemon src/main.js",
   "test": "echo \"Error: no test specified\" && exit 1"
  },
